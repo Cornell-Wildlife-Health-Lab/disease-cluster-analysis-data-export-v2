@@ -1,1 +1,1 @@
-This is the repository for the Disease Cluster Analysis Data Export in the CWD Data Warehouse.
+This SOP4CWD repository contains the scripts used to run the Disease Cluster Analysis Data Export in the CWD Data Warehouse. The Disease Cluster Analysis Data Export allows users to format data for immediate upload into the SaTScan™ sofware, located at https://www.satscan.org/. Scripts are annotated and shared with an MIT license. For information about the SOP4CWD project, visit https://sop4cwd.org/.  
