@@ -1,12 +1,12 @@
 #!/bin/bash
-python3 "/app/scripts/input_processing.py"
+python3 "scripts/input_processing.py"
 exit_status=$?  # Capture exit code
 echo "Exit status: $exit_status"
 
 # Check if the first exit code is zero (successful)
 if [ $exit_status -eq 0 ]; then  # Use == for comparison
   echo "Input processing ran successfully. Run model script."
-  Rscript "/app/scripts/DiseaseClusterAnalysisDataExport.R"
+  Rscript "scripts/DiseaseClusterAnalysisDataExport.R"
   exit_status=$?  # Capture exit code
   echo "Exit status: $exit_status"
 else
