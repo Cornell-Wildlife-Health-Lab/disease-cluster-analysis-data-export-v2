@@ -365,7 +365,7 @@ html_tag_line <- function(text, tag = "p") {
   } # End if tufted deer.
   
   # All species.
-  if (Params$species=="allspecies"){
+  if (tolower(Params$species) == "all species"){
     TidyData=Sample4 # Note, we know that at least one record exists in Sample4 due to the check above.
     TidyDataDim=as.numeric(nrow(TidyData))
     
