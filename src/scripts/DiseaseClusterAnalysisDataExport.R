@@ -28,10 +28,11 @@
 
 # Load packages.
   library(tidyverse) # Version 4.4.0
+  library(jsonlite)
 
 # Reusable Functions.
-
-add_item_to_json_array=function(file_path, new_item) {
+json_attachment_file = "../attachments.json"
+add_item_to_json_array=function(file_path, new_item, item_type) {
     # This is a bespoke function that adds a string representing a JavaScript
     # Object to the attachments.json file containing an array listing the model
     # outputs. Although this function has error handling for a missing file and
@@ -48,10 +49,11 @@ add_item_to_json_array=function(file_path, new_item) {
         quit(status=1)}
 
     # Read the file content.
-    file_content=readChar(file_path, file.info(file_path)$size)
-
+    #file_content=readChar(file_path, file.info(file_path)$size)
+    file_content <- fromJSON(file_path, simplifyVector = FALSE)
+    
     # Check if the file is empty.
-    if (nchar(file_content) == 0) {
+    if (length(file_content) == 0) {
         line="ERROR"
         write(html_tag_line(line, "h4"),file=model_log_filepath,append=TRUE)
         line=paste0("File '", file_path, "' is empty.")
@@ -59,27 +61,13 @@ add_item_to_json_array=function(file_path, new_item) {
         quit(status=1)}
 
     # Remove the last closing bracket.
-    file_content=substr(file_content, 1, nchar(file_content) - 1)
-
-    # Create a function for adding double quotes around text.
-    double_quote=function(x) {paste0('"', x, '"')}
-
-    # Create the new item as a JSON string using shQuote with double_quote.
-    new_item_json=paste0(
-        "{",
-        paste(
-            sapply(names(new_item), double_quote),
-            sapply(as.character(new_item), double_quote),
-            sep=":", collapse=","
-        ),
-        "}"
+    file_content[[length(file_content) + 1]] <- list(
+      filename = new_item,
+      content_type = item_type,
+      role = "downloadable"
     )
-
-    # Add comma, new item, and closing bracket to the file content
-    file_content=paste0(file_content, ",", new_item_json, "]")
-
-    # Write the updated data back to the file
-    writeLines(file_content, file_path, sep="")
+    
+    write_json(file_content, file_path, pretty = TRUE, auto_unbox = TRUE)
 }
 
 html_tag_line <- function(text, tag = "p") {
@@ -921,6 +909,9 @@ if (Params$scan_type=="Discrete Bernoulli Spatial [Exact Location]"){
           "Year"=FinalPositives$Season.Year,
           "Date"=FinalPositives$Harvest.Date)
         write.csv(Cases, "Case_File.csv", row.names = FALSE)
+        
+        add_item_to_json_array(json_attachment_file, "Case_File.csv", "text/csv")
+        
         } # End if positives exist in SaTScan_data. 
     
 # Make sure final outputs have at least one negative case.
@@ -945,6 +936,9 @@ if (Params$scan_type=="Discrete Bernoulli Spatial [Exact Location]"){
             "Year"=FinalNegatives$Season.Year,
             "Date"=FinalNegatives$Harvest.Date)
         write.csv(Controls, "Control_File.csv", row.names = FALSE)
+        
+        add_item_to_json_array(json_attachment_file, "Control_File.csv", "text/csv")
+        
         } # End if negatives exist in SaTScan_data. 
 
 # If both positives and negatives exist, then print the remaining files.
@@ -963,7 +957,12 @@ if (Params$scan_type=="Discrete Bernoulli Spatial [Exact Location]"){
       "Latitude"=SaTScan_data$Latitude,
       "Longitude"=SaTScan_data$Longitude)
     write.csv(FinalCoordinates, "Coordinates_File.csv", row.names = FALSE)
+    add_item_to_json_array(json_attachment_file, "Coordinates_File.csv", "text/csv")
+    
+    
     write.csv(user_inputs_out, "SaTScan_user_inputs.csv", row.names = FALSE)
+    add_item_to_json_array(json_attachment_file, "SaTScan_user_inputs.csv", "text/csv")
+    
     } # End if both positives and negatives exist.
     
     # If one or both of these don't exist, then the session has already been terminated.

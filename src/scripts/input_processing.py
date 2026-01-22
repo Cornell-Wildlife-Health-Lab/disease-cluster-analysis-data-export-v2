@@ -245,7 +245,7 @@ if 'season_year' in params:
   params['season_year'] = ', '.join(params['season_year'])
 
 # Write revised parameters to a CSV file
-with open(pathlib.Path("/data/params.csv"), 'w', newline='') as f:
+with open(pathlib.Path(base_path / "params.csv"), 'w', newline='') as f:
   field_names = params.keys()
   writer = csv.DictWriter(
     f, 
@@ -347,7 +347,7 @@ for sample in samples:
       sample["latitude"] = None
 
 # Write to a CSV
-with open(pathlib.Path("/data/sample.csv"), 'w', newline='') as f:
+with open(pathlib.Path(base_path / "sample.csv"), 'w', newline='') as f:
   writer = csv.DictWriter(
     f, 
     quoting=csv.QUOTE_NONNUMERIC,
